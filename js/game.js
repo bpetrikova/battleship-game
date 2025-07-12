@@ -258,6 +258,7 @@ function startGame(data) {
     // Uložím si playerId z game_start
     if (ws) ws.playerId = data.playerId;
     gameState = 'setup';
+    chatMessages = [];
     console.log('startGame:', { gameId, playerNumber, opponentName, myName, playerId: data.playerId });
     showGameInterface();
     showMessage(`Hra začíná! Tvůj protivník: ${opponentName}`, 'success');
@@ -584,8 +585,12 @@ function handleGameOver(data) {
  * Handle opponent disconnection
  */
 function handleOpponentDisconnection(data) {
-    showMessage('Protivník se odpojil. Hra končí.', 'warning');
+    showMessage('Protivník se odpojil. Hledám nového soupeře...', 'warning');
     gameState = 'disconnected';
+    setTimeout(() => {
+        chatMessages = [];
+        initMultiplayerGame();
+    }, 2000);
 }
 
 /**
