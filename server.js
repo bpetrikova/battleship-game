@@ -126,15 +126,19 @@ function broadcastToGame(gameId, message, excludePlayer = null) {
 function handleShipPlacement(ws, data) {
     const game = games.get(data.gameId);
     if (!game) return;
-    
     const playerId = ws.playerId;
     const { row, col, shipType, orientation } = data;
-    
+    // DEBUG LOG
+    console.log('handleShipPlacement:', { gameId: data.gameId, playerId, shipType, ships: game.ships });
+    if (!game.ships[playerId]) {
+        console.error('handleShipPlacement: game.ships[playerId] is undefined', { playerId, ships: game.ships });
+        ws.send(JSON.stringify({ type: 'error', message: 'Server error: player ships not found. Try reload.' }));
+        return;
+    }
     // Validate ship placement
     if (canPlaceShip(game.boards[playerId], row, col, game.ships[playerId][shipType].size, orientation)) {
         placeShip(game.boards[playerId], row, col, game.ships[playerId][shipType].size, orientation, 1);
         game.ships[playerId][shipType].placed = true;
-        
         // Notify both players
         broadcastToGame(data.gameId, {
             type: 'ship_placed',
@@ -144,12 +148,10 @@ function handleShipPlacement(ws, data) {
             col: col,
             orientation: orientation
         });
-        
         // Check if all ships are placed
         const allShipsPlaced = Object.values(game.ships[playerId]).every(ship => ship.placed);
         if (allShipsPlaced) {
             game.readyPlayers.add(playerId);
-            
             if (game.readyPlayers.size === 2) {
                 // Both players ready, start combat phase
                 game.state = 'playing';
