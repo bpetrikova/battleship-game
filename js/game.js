@@ -366,26 +366,27 @@ function createBoards() {
  */
 function handleMyBoardClick(index) {
     if (gameState !== 'setup') return;
-    
     const row = Math.floor(index / 10);
     const col = index % 10;
-    
     if (editMode && myBoard[row][col] > 0) {
         removeShipAt(row, col);
         updateDisplay();
         checkAllShipsPlaced();
         return;
     }
-    
     if (!selectedShip || myShips[selectedShip].placed) {
+        showMessage('Nejprve vyber typ lodě!', 'error');
         return;
     }
-    
+    if (gameId == null) {
+        showMessage('Chyba: Hra není inicializována (gameId není nastaveno).', 'error');
+        return;
+    }
+    // Debug log
+    console.log('Placing ship:', { gameId, selectedShip, row, col, isHorizontal });
     if (canPlaceShip(myBoard, row, col, myShips[selectedShip].size, isHorizontal)) {
         placeShip(myBoard, row, col, myShips[selectedShip].size, isHorizontal, 1);
         myShips[selectedShip].placed = true;
-        
-        // Send ship placement to server
         ws.send(JSON.stringify({
             type: 'place_ship',
             gameId: gameId,
@@ -394,7 +395,6 @@ function handleMyBoardClick(index) {
             col: col,
             orientation: isHorizontal
         }));
-        
         selectedShip = null;
         updateDisplay();
         checkAllShipsPlaced();
