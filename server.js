@@ -375,6 +375,12 @@ wss.on('connection', (ws) => {
                 case 'player_ready':
                     const gameReady = games.get(data.gameId);
                     if (!gameReady) break;
+                    // Ověř, že hráč má opravdu všechny lodě
+                    const ships = gameReady.ships[ws.playerId];
+                    if (!ships || !Object.values(ships).every(ship => ship.placed)) {
+                        console.log('player_ready: hráč nemá všechny lodě!', { playerId: ws.playerId, ships });
+                        break;
+                    }
                     gameReady.readyPlayers.add(ws.playerId);
                     if (gameReady.readyPlayers.size === 2) {
                         gameReady.state = 'playing';
