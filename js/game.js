@@ -221,6 +221,11 @@ function startGame(data) {
     playerNumber = data.playerNumber;
     opponentName = data.opponent;
     myName = data.myName || 'Hráč';
+    // Pokud mají oba stejné jméno, přidej rozlišení
+    if (myName === opponentName) {
+        myName = myName + ' (Ty)';
+        opponentName = opponentName + ' (Protivník)';
+    }
     gameState = 'setup';
     console.log('startGame:', { gameId, playerNumber, opponentName, myName });
     showGameInterface();
@@ -239,7 +244,7 @@ function showGameInterface() {
         
         <div class="game-info">
             <div class="player-info">
-                <span class="player-name">${myName} (Ty)</span>
+                <span class="player-name">${myName}</span>
                 <span class="opponent-name">${opponentName}</span>
             </div>
             <div class="connection-indicator" id="connectionIndicator">
@@ -452,9 +457,9 @@ function startCombatPhase(data) {
     document.getElementById('shipList').style.display = 'none';
     document.getElementById('editModeInfo').style.display = 'none';
     
-    document.getElementById('gamePhase').textContent = isMyTurn ? 
-        'Tvůj tah - klikni na nepřátelské pole' : 
-        `Čekání na tah ${opponentName}`;
+    document.getElementById('gamePhase').textContent = isMyTurn ?
+        'Jsi na tahu! Klikni na nepřátelské pole.' :
+        `Čekáš na tah: ${opponentName}`;
     
     showMessage('Hra začíná!', 'success');
 }
@@ -511,9 +516,9 @@ function handleShotResult(data) {
         showShotOverlay(overlayEmoji, overlayMsg);
     }
     isMyTurn = nextPlayer === ws.playerId;
-    document.getElementById('gamePhase').textContent = isMyTurn ? 
-        'Tvůj tah - klikni na nepřátelské pole' : 
-        `Čekání na tah ${opponentName}`;
+    document.getElementById('gamePhase').textContent = isMyTurn ?
+        'Jsi na tahu! Klikni na nepřátelské pole.' :
+        `Čekáš na tah: ${opponentName}`;
     updateDisplay();
 }
 
