@@ -829,6 +829,9 @@ function placeShip(board, row, col, size, horizontal, value) {
 function checkAllShipsPlaced() {
     const allPlaced = Object.values(myShips).every(ship => ship.placed);
     document.getElementById('readyBtn').disabled = !allPlaced;
+    if (allPlaced && !isReady) {
+        readyUp();
+    }
 }
 
 function updateDisplay() {
