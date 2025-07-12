@@ -918,7 +918,8 @@ function updateBoard(boardId, board, shots, showShips) {
         // Speciální logika pro moje pole: pokud je tam loď a byla potopena, zobraz sunk
         if (boardId === 'myBoard' && board[row][col] > 0) {
             if (opponentShots[row][col] === 3) {
-                cell.className = 'cell sunk'; // Přepiš všechny ostatní třídy
+                cell.classList.remove('hit');
+                cell.classList.add('sunk');
             } else if (opponentShots[row][col] === 2) {
                 cell.classList.add('hit');
             }
