@@ -324,17 +324,6 @@ function showGameInterface() {
             </div>
         </div>
 
-        <div class="boards-container">
-            <div class="board-section">
-                <div class="board-title">Tvé lodě</div>
-                <div class="game-board" id="myBoard"></div>
-            </div>
-            <div class="board-section">
-                <div class="board-title">Nepřátelské vody</div>
-                <div class="game-board" id="opponentBoard"></div>
-            </div>
-        </div>
-
         <div class="stats" id="gameStats">
             <div class="stat-item">
                 <div class="stat-label">Tvé lodě</div>
@@ -351,6 +340,17 @@ function showGameInterface() {
             <div class="stat-item">
                 <div class="stat-label">Protivníkovy výstřely</div>
                 <div class="stat-value" id="opponentShots">0</div>
+            </div>
+        </div>
+
+        <div class="boards-container">
+            <div class="board-section">
+                <div class="board-title">Tvé lodě</div>
+                <div class="game-board" id="myBoard"></div>
+            </div>
+            <div class="board-section">
+                <div class="board-title">Nepřátelské vody</div>
+                <div class="game-board" id="opponentBoard"></div>
             </div>
         </div>
 
@@ -511,6 +511,20 @@ function startCombatPhase(data) {
  */
 function handleShotResult(data) {
     const { playerId, row, col, hit, shipSunk, nextPlayer, nextPlayerName } = data;
+    // --- přidáno: aktualizace shots z dat serveru ---
+    if (data.shots) {
+        myShots = data.shots[ws.playerId];
+        // Najdi id soupeře
+        let oppId = null;
+        for (const id in data.shots) {
+            if (id !== ws.playerId) oppId = id;
+        }
+        if (oppId) opponentShots = data.shots[oppId];
+        // DEBUG výpisy
+        console.log('[CLIENT DEBUG] myShots:', JSON.stringify(myShots));
+        console.log('[CLIENT DEBUG] opponentShots:', JSON.stringify(opponentShots));
+    }
+    // --- konec přidaného ---
     let overlayEmoji = '';
     let overlayMsg = '';
     if (playerId === ws.playerId) {
