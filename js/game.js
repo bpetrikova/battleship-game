@@ -834,17 +834,16 @@ function updateBoard(boardId, board, shots, showShips) {
     cells.forEach((cell, index) => {
         const row = Math.floor(index / 10);
         const col = index % 10;
-        
+
         cell.className = 'cell';
-        
-        if (shots) {
-            if (shots[row][col] === 3) {
-                cell.classList.add('sunk');
-            } else if (shots[row][col] === 2) {
-                cell.classList.add('hit');
-            } else if (shots[row][col] === 1) {
-                cell.classList.add('miss');
-            }
+
+        // Zásahy, minely, potopení mají přednost
+        if (shots && shots[row][col] === 3) {
+            cell.classList.add('sunk');
+        } else if (shots && shots[row][col] === 2) {
+            cell.classList.add('hit');
+        } else if (shots && shots[row][col] === 1) {
+            cell.classList.add('miss');
         } else if (showShips && board[row][col] > 0) {
             cell.classList.add('ship');
             if (editMode) {
