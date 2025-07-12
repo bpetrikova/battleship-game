@@ -29,6 +29,9 @@ function generatePlayerId() {
 }
 
 function createGame(player1, player2) {
+    // Oprava: nastavíme id podle playerId
+    player1.id = player1.playerId;
+    player2.id = player2.playerId;
     const gameId = generateGameId();
     const game = {
         id: gameId,
