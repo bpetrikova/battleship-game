@@ -871,11 +871,13 @@ function updateBoard(boardId, board, shots, showShips) {
             }
         }
         // Zobraz lebku na mém poli, pokud je tam loď a opponentShots[row][col] === 3
-        if (boardId === 'myBoard' && board[row][col] > 0 && opponentShots[row][col] === 3) {
-            cell.classList.remove('hit');
-            cell.classList.add('sunk');
-        } else if (boardId === 'myBoard' && board[row][col] > 0 && opponentShots[row][col] === 2) {
-            cell.classList.add('hit');
+        if (boardId === 'myBoard' && board[row][col] > 0) {
+            if (opponentShots[row][col] === 3) {
+                cell.classList.remove('hit');
+                cell.classList.add('sunk');
+            } else if (opponentShots[row][col] === 2) {
+                cell.classList.add('hit');
+            }
         }
     });
 }

@@ -68,7 +68,8 @@ function createGame(player1, player2) {
             [player1.id]: 0,
             [player2.id]: 0
         },
-        readyPlayers: new Set()
+        readyPlayers: new Set(),
+        consecutiveHits: {} // Přidám proměnnou pro sledování počtu zásahů v řadě
     };
     
     games.set(gameId, game);
@@ -213,9 +214,30 @@ function handleShot(ws, data) {
         return;
     }
     
-    // Switch turns pouze pokud hráč netrefil loď
-    if (!hit) {
+    // Přidám proměnnou pro sledování počtu zásahů v řadě
+    // Do game objektu přidám: consecutiveHits: { [playerId]: 0, ... }
+    // Při vytvoření hry:
+    // consecutiveHits: { [player1.id]: 0, [player2.id]: 0 }
+    //
+    // V handleShot:
+    if (!game.consecutiveHits) {
+        game.consecutiveHits = {};
+        game.consecutiveHits[game.players[0].id] = 0;
+        game.consecutiveHits[game.players[1].id] = 0;
+    }
+
+    if (hit) {
+        game.consecutiveHits[playerId] = (game.consecutiveHits[playerId] || 0) + 1;
+    } else {
+        game.consecutiveHits[playerId] = 0;
+    }
+
+    // Switch turns pouze pokud hráč netrefil loď NEBO už měl jeden zásah v řadě
+    if (!hit || game.consecutiveHits[playerId] > 1) {
         game.currentPlayer = (game.currentPlayer + 1) % 2;
+        // Resetuj zásahy v řadě pro nového hráče
+        const nextPlayerId = game.players[game.currentPlayer].id;
+        game.consecutiveHits[nextPlayerId] = 0;
     }
     
     // Notify both players
