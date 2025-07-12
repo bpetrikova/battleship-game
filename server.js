@@ -241,6 +241,7 @@ function handleShot(ws, data) {
     }
     
     // Notify both players
+    console.log('[SERVER DEBUG] shots:', JSON.stringify(game.shots));
     broadcastToGame(data.gameId, {
         type: 'shot_result',
         playerId: playerId,
@@ -249,7 +250,8 @@ function handleShot(ws, data) {
         hit: hit,
         shipSunk: shipSunk,
         nextPlayer: game.players[game.currentPlayer].id,
-        nextPlayerName: game.players[game.currentPlayer].name
+        nextPlayerName: game.players[game.currentPlayer].name,
+        shots: game.shots // <-- přidáno
     });
 }
 
