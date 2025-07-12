@@ -913,5 +913,3 @@ function showShotOverlay(emoji, message) {
 
 // Initialize multiplayer game when page loads
 document.addEventListener('DOMContentLoaded', initMultiplayerGame); 
-document.addEventListener('DOMContentLoaded', initGame); 
-document.addEventListener('DOMContentLoaded', initGame); 
