@@ -213,8 +213,10 @@ function handleShot(ws, data) {
         return;
     }
     
-    // Switch turns
-    game.currentPlayer = (game.currentPlayer + 1) % 2;
+    // Switch turns pouze pokud hráč netrefil loď
+    if (!hit) {
+        game.currentPlayer = (game.currentPlayer + 1) % 2;
+    }
     
     // Notify both players
     broadcastToGame(data.gameId, {

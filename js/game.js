@@ -870,8 +870,11 @@ function updateBoard(boardId, board, shots, showShips) {
                 cell.classList.add('editable');
             }
         }
-        // Zobraz ohýnek na mém poli, pokud je tam loď a zásah od soupeře
-        if (boardId === 'myBoard' && board[row][col] > 0 && opponentShots[row][col] === 2) {
+        // Zobraz lebku na mém poli, pokud je tam loď a opponentShots[row][col] === 3
+        if (boardId === 'myBoard' && board[row][col] > 0 && opponentShots[row][col] === 3) {
+            cell.classList.remove('hit');
+            cell.classList.add('sunk');
+        } else if (boardId === 'myBoard' && board[row][col] > 0 && opponentShots[row][col] === 2) {
             cell.classList.add('hit');
         }
     });
