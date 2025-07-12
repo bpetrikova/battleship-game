@@ -210,6 +210,17 @@ function handleServerMessage(data) {
         case 'chat_message':
             handleChatMessage(data);
             break;
+        case 'not_ready':
+            // Pokud server odmítl ready, zkusím to znovu po krátké prodlevě
+            setTimeout(() => {
+                if (Object.values(myShips).every(ship => ship.placed) && !isReady) {
+                    ws.send(JSON.stringify({
+                        type: 'player_ready',
+                        gameId: gameId
+                    }));
+                }
+            }, 200);
+            break;
     }
 }
 
@@ -446,6 +457,15 @@ function handleOpponentBoardClick(index) {
 function handleOpponentShipPlacement(data) {
     // Update opponent's board (we don't see their ships, just track for game logic)
     showMessage(`${opponentName} umístil loď`, 'info');
+    // Po každé odpovědi ship_placed zkontroluji, jestli jsem ready
+    setTimeout(() => {
+        if (Object.values(myShips).every(ship => ship.placed) && !isReady) {
+            ws.send(JSON.stringify({
+                type: 'player_ready',
+                gameId: gameId
+            }));
+        }
+    }, 100); // malá prodleva kvůli asynchronnímu zpracování
 }
 
 /**

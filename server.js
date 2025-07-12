@@ -405,6 +405,7 @@ wss.on('connection', (ws) => {
                     const ships = gameReady.ships[ws.playerId];
                     if (!ships || !Object.values(ships).every(ship => ship.placed)) {
                         console.log('player_ready: hráč nemá všechny lodě!', { playerId: ws.playerId, ships });
+                        ws.send(JSON.stringify({ type: 'not_ready' }));
                         break;
                     }
                     gameReady.readyPlayers.add(ws.playerId);
