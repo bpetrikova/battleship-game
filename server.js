@@ -86,7 +86,8 @@ function createGame(player1, player2) {
         gameId: gameId,
         playerNumber: 1,
         opponent: player2.name,
-        myName: player1.name
+        myName: player1.name,
+        playerId: player1.id
     }));
     
     player2.send(JSON.stringify({
@@ -94,7 +95,8 @@ function createGame(player1, player2) {
         gameId: gameId,
         playerNumber: 2,
         opponent: player1.name,
-        myName: player2.name
+        myName: player2.name,
+        playerId: player2.id
     }));
     
     console.log(`Game ${gameId} created between ${player1.name} and ${player2.name}`);

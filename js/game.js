@@ -226,8 +226,10 @@ function startGame(data) {
         myName = myName + ' (Ty)';
         opponentName = opponentName + ' (Protivník)';
     }
+    // Uložím si playerId z game_start
+    if (ws) ws.playerId = data.playerId;
     gameState = 'setup';
-    console.log('startGame:', { gameId, playerNumber, opponentName, myName });
+    console.log('startGame:', { gameId, playerNumber, opponentName, myName, playerId: data.playerId });
     showGameInterface();
     showMessage(`Hra začíná! Tvůj protivník: ${opponentName}`, 'success');
     console.log('myShips at start:', myShips);
@@ -451,6 +453,7 @@ function handleOpponentShipPlacement(data) {
  */
 function startCombatPhase(data) {
     gameState = 'playing';
+    // Porovnávám s ws.playerId
     isMyTurn = data.currentPlayer === ws.playerId;
     
     document.getElementById('setupControls').style.display = 'none';
@@ -515,6 +518,7 @@ function handleShotResult(data) {
     if (overlayEmoji && overlayMsg) {
         showShotOverlay(overlayEmoji, overlayMsg);
     }
+    // Porovnávám s ws.playerId
     isMyTurn = nextPlayer === ws.playerId;
     document.getElementById('gamePhase').textContent = isMyTurn ?
         'Jsi na tahu! Klikni na nepřátelské pole.' :
