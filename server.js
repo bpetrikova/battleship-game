@@ -326,21 +326,40 @@ wss.on('connection', (ws) => {
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
+            console.log('Received message:', data); // DEBUG LOG
             
             switch (data.type) {
                 case 'join_game':
                     ws.name = data.name || `Player ${playerId}`;
                     findOpponent(ws);
                     break;
-                    
                 case 'place_ship':
+                    // DEBUG: log all fields
+                    if (!data.gameId || typeof data.gameId !== 'string') {
+                        console.error('Invalid place_ship: missing or invalid gameId', data);
+                        ws.send(JSON.stringify({ type: 'error', message: 'Invalid place_ship: missing or invalid gameId' }));
+                        return;
+                    }
+                    if (!data.shipType || typeof data.shipType !== 'string') {
+                        console.error('Invalid place_ship: missing or invalid shipType', data);
+                        ws.send(JSON.stringify({ type: 'error', message: 'Invalid place_ship: missing or invalid shipType' }));
+                        return;
+                    }
+                    if (typeof data.row !== 'number' || typeof data.col !== 'number') {
+                        console.error('Invalid place_ship: row/col not numbers', data);
+                        ws.send(JSON.stringify({ type: 'error', message: 'Invalid place_ship: row/col not numbers' }));
+                        return;
+                    }
+                    if (typeof data.orientation !== 'boolean') {
+                        console.error('Invalid place_ship: orientation not boolean', data);
+                        ws.send(JSON.stringify({ type: 'error', message: 'Invalid place_ship: orientation not boolean' }));
+                        return;
+                    }
                     handleShipPlacement(ws, data);
                     break;
-                    
                 case 'fire_shot':
                     handleShot(ws, data);
                     break;
-                    
                 case 'chat_message':
                     const game = games.get(data.gameId);
                     if (game) {
@@ -352,7 +371,6 @@ wss.on('connection', (ws) => {
                         });
                     }
                     break;
-                    
                 case 'ping':
                     ws.send(JSON.stringify({ type: 'pong' }));
                     break;
