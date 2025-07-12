@@ -418,9 +418,12 @@ app.get('/status', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-console.log(`Environment PORT: ${process.env.PORT}`);
-console.log(`Using PORT: ${PORT}`);
+// Railway specific port handling
+const PORT = process.env.PORT || process.env.RAILWAY_STATIC_URL_PORT || 3000;
+console.log(`Environment variables:`);
+console.log(`- PORT: ${process.env.PORT}`);
+console.log(`- RAILWAY_STATIC_URL_PORT: ${process.env.RAILWAY_STATIC_URL_PORT}`);
+console.log(`- Using PORT: ${PORT}`);
 
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚢 Battleship multiplayer server running on port ${PORT}`);
