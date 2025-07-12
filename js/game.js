@@ -910,8 +910,10 @@ function updateBoard(boardId, board, shots, showShips) {
         // PRIORITA: sunk > hit > miss > ship
         if (shots && shots[row][col] === 3) {
             cell.classList.add('sunk');
+            console.log(`[DEBUG] SINK: (${row},${col}) shots=${shots[row][col]}`);
         } else if (shots && shots[row][col] === 2) {
             cell.classList.add('hit');
+            console.log(`[DEBUG] HIT:  (${row},${col}) shots=${shots[row][col]}`);
         } else if (shots && shots[row][col] === 1) {
             cell.classList.add('miss');
         } else if (showShips && board[row][col] > 0) {
@@ -925,8 +927,10 @@ function updateBoard(boardId, board, shots, showShips) {
             if (opponentShots[row][col] === 3) {
                 cell.classList.remove('hit');
                 cell.classList.add('sunk');
+                console.log(`[DEBUG] MY SINK: (${row},${col}) opponentShots=${opponentShots[row][col]}`);
             } else if (opponentShots[row][col] === 2 && opponentShots[row][col] !== 3) {
                 cell.classList.add('hit');
+                console.log(`[DEBUG] MY HIT:  (${row},${col}) opponentShots=${opponentShots[row][col]}`);
             }
         }
     });
