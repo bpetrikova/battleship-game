@@ -276,8 +276,21 @@ h1 {
 }
 
 .cell.ship {
-    background: #2c3e50;
-    border-color: #34495e;
+    background: #00b894 !important;
+    border-color: #00e6a8 !important;
+    position: relative;
+}
+.cell.ship::after {
+    content: '🚢';
+    font-size: 18px;
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 1px 4px #000;
+    pointer-events: none;
 }
 
 .cell.ship.editable {
