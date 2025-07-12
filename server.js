@@ -156,17 +156,7 @@ function handleShipPlacement(ws, data) {
         });
         // Check if all ships are placed
         const allShipsPlaced = Object.values(game.ships[playerId]).every(ship => ship.placed);
-        if (allShipsPlaced) {
-            game.readyPlayers.add(playerId);
-            if (game.readyPlayers.size === 2) {
-                // Both players ready, start combat phase
-                game.state = 'playing';
-                broadcastToGame(data.gameId, {
-                    type: 'combat_start',
-                    currentPlayer: game.players[0].id
-                });
-            }
-        }
+        // Dříve zde bylo: pokud allShipsPlaced, přidej do readyPlayers a spusť hru. To nyní řeší pouze player_ready.
     }
 }
 
