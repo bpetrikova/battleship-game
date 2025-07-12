@@ -28,6 +28,9 @@ let ws = null;
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
 
+// 1. Uložím jméno hráče při připojení
+let myName = '';
+
 // Ship templates
 const shipTemplates = {
     carrier: { size: 5, placed: false },
@@ -217,8 +220,9 @@ function startGame(data) {
     gameId = data.gameId;
     playerNumber = data.playerNumber;
     opponentName = data.opponent;
+    myName = data.myName || 'Hráč';
     gameState = 'setup';
-    console.log('startGame:', { gameId, playerNumber, opponentName });
+    console.log('startGame:', { gameId, playerNumber, opponentName, myName });
     showGameInterface();
     showMessage(`Hra začíná! Tvůj protivník: ${opponentName}`, 'success');
     console.log('myShips at start:', myShips);
@@ -235,8 +239,8 @@ function showGameInterface() {
         
         <div class="game-info">
             <div class="player-info">
-                <span class="player-name">Ty (Hráč ${playerNumber})</span>
-                <span class="opponent-name">Protivník: ${opponentName}</span>
+                <span class="player-name">${myName} (Ty)</span>
+                <span class="opponent-name">${opponentName}</span>
             </div>
             <div class="connection-indicator" id="connectionIndicator">
                 <span class="dot connected"></span>
@@ -244,9 +248,7 @@ function showGameInterface() {
             </div>
         </div>
 
-        <div class="game-phase" id="gamePhase">
-            Umísti své lodě na herní pole
-        </div>
+        <div class="game-phase" id="gamePhase">Umísti své lodě na herní pole</div>
 
         <div class="setup-controls" id="setupControls">
             <button class="control-btn" onclick="toggleOrientation()">
@@ -471,16 +473,16 @@ function handleShotResult(data) {
         if (hit) {
             if (shipSunk) {
                 shipsSunk.opponent++;
-                showMessage(`💀 Potopil jsi nepřátelskou loď!`, 'success');
+                showMessage('Dobrá práce, piráte. Doraž ho ať jsi vládcem moří.', 'success');
                 overlayEmoji = '💀';
                 overlayMsg = 'Potopil jsi loď!';
             } else {
-                showMessage(`🎯 Zásah!`, 'hit');
+                showMessage('Piráte, doraž ho', 'hit');
                 overlayEmoji = '🎯';
                 overlayMsg = 'Zásah!';
             }
         } else {
-            showMessage(`🌊 Minul!`, 'miss');
+            showMessage('🌊 Minul!', 'miss');
             overlayEmoji = '🌊';
             overlayMsg = 'Voda!';
         }
@@ -491,18 +493,18 @@ function handleShotResult(data) {
         if (hit) {
             if (shipSunk) {
                 shipsSunk.me++;
-                showMessage(`💀 ${opponentName} potopil tvou loď!`, 'error');
+                showMessage('💀 ' + opponentName + ' potopil tvou loď! Bojuj dál o přežití.', 'error');
                 overlayEmoji = '💀';
-                overlayMsg = `${opponentName} potopil tvou loď!`;
+                overlayMsg = opponentName + ' potopil tvou loď!';
             } else {
-                showMessage(`🎯 ${opponentName} trefil tvou loď!`, 'hit');
+                showMessage('Tvoje loď byla zasažena. Bojuj dál o přežití.', 'hit');
                 overlayEmoji = '🎯';
-                overlayMsg = `${opponentName} trefil tvou loď!`;
+                overlayMsg = opponentName + ' trefil tvou loď!';
             }
         } else {
-            showMessage(`🌊 ${opponentName} minul!`, 'miss');
+            showMessage('🌊 ' + opponentName + ' minul!', 'miss');
             overlayEmoji = '🌊';
-            overlayMsg = `${opponentName} minul!`;
+            overlayMsg = opponentName + ' minul!';
         }
     }
     if (overlayEmoji && overlayMsg) {
@@ -855,6 +857,10 @@ function updateBoard(boardId, board, shots, showShips) {
             if (editMode) {
                 cell.classList.add('editable');
             }
+        }
+        // Zobraz ohýnek na mém poli, pokud je tam loď a zásah od soupeře
+        if (boardId === 'myBoard' && board[row][col] > 0 && opponentShots[row][col] === 2) {
+            cell.classList.add('hit');
         }
     });
 }
