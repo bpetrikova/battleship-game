@@ -899,9 +899,10 @@ function updateBoard(boardId, board, shots, showShips) {
         const row = Math.floor(index / 10);
         const col = index % 10;
 
+        // Vždy začni s čistou třídou
         cell.className = 'cell';
 
-        // Zásahy, minely, potopení mají přednost
+        // PRIORITA: sunk > hit > miss > ship
         if (shots && shots[row][col] === 3) {
             cell.classList.add('sunk');
         } else if (shots && shots[row][col] === 2) {
@@ -914,11 +915,10 @@ function updateBoard(boardId, board, shots, showShips) {
                 cell.classList.add('editable');
             }
         }
-        // Zobraz lebku na mém poli, pokud je tam loď a opponentShots[row][col] === 3
+        // Speciální logika pro moje pole: pokud je tam loď a byla potopena, zobraz sunk
         if (boardId === 'myBoard' && board[row][col] > 0) {
             if (opponentShots[row][col] === 3) {
-                cell.classList.remove('hit');
-                cell.classList.add('sunk');
+                cell.className = 'cell sunk'; // Přepiš všechny ostatní třídy
             } else if (opponentShots[row][col] === 2) {
                 cell.classList.add('hit');
             }
