@@ -593,6 +593,12 @@ function readyUp() {
     document.getElementById('readyBtn').textContent = '⏳ Čekám na protivníka...';
     
     showMessage('Jsi připraven! Čekám na protivníka...', 'info');
+
+    // Odeslat serveru informaci o připravenosti
+    ws.send(JSON.stringify({
+        type: 'player_ready',
+        gameId: gameId
+    }));
 }
 
 /**

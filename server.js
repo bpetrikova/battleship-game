@@ -29,9 +29,7 @@ function generatePlayerId() {
 }
 
 function createGame(player1, player2) {
-    // Oprava: nastavíme id podle playerId
-    player1.id = player1.playerId;
-    player2.id = player2.playerId;
+    // id už je nastaveno ve findOpponent
     const gameId = generateGameId();
     const game = {
         id: gameId,
@@ -104,6 +102,9 @@ function createGame(player1, player2) {
 function findOpponent(player) {
     if (lobby.waitingPlayers.length > 0) {
         const opponent = lobby.waitingPlayers.shift();
+        // Oprava: nastavíme id explicitně zde
+        player.id = player.playerId;
+        opponent.id = opponent.playerId;
         return createGame(opponent, player);
     } else {
         lobby.waitingPlayers.push(player);
@@ -378,6 +379,18 @@ wss.on('connection', (ws) => {
                     break;
                 case 'ping':
                     ws.send(JSON.stringify({ type: 'pong' }));
+                    break;
+                case 'player_ready':
+                    const gameReady = games.get(data.gameId);
+                    if (!gameReady) break;
+                    gameReady.readyPlayers.add(ws.playerId);
+                    if (gameReady.readyPlayers.size === 2) {
+                        gameReady.state = 'playing';
+                        broadcastToGame(data.gameId, {
+                            type: 'combat_start',
+                            currentPlayer: gameReady.players[0].id
+                        });
+                    }
                     break;
             }
         } catch (error) {
