@@ -185,10 +185,20 @@ function handleServerMessage(data) {
             
         case 'ship_placed':
             handleOpponentShipPlacement(data);
+            // Pokud mám všechny lodě umístěné, zkusím se připravit
+            if (Object.values(myShips).every(ship => ship.placed) && !isReady) {
+                console.log('Všechny lodě umístěny, odesílám player_ready...');
+                ws.send(JSON.stringify({
+                    type: 'player_ready',
+                    gameId: gameId
+                }));
+            }
             break;
             
         case 'combat_start':
             startCombatPhase(data);
+            // Reset ready stavu, protože hra začíná
+            isReady = false;
             break;
             
         case 'shot_result':
@@ -211,9 +221,17 @@ function handleServerMessage(data) {
             handleChatMessage(data);
             break;
         case 'not_ready':
-            // Pokud server odmítl ready, zkusím to znovu po krátké prodlevě
+            // Pokud server odmítl ready, resetuji stav a zkusím to znovu
+            console.log('Server odmítl ready, resetuji stav a zkouším znovu...');
+            isReady = false;
+            const readyBtn = document.getElementById('readyBtn');
+            if (readyBtn) {
+                readyBtn.disabled = false;
+                readyBtn.textContent = '✅ Jsem připraven';
+            }
             setTimeout(() => {
                 if (Object.values(myShips).every(ship => ship.placed) && !isReady) {
+                    console.log('Odesílám player_ready znovu...');
                     ws.send(JSON.stringify({
                         type: 'player_ready',
                         gameId: gameId
@@ -626,6 +644,7 @@ function readyUp() {
     showMessage('Jsi připraven! Čekám na protivníka...', 'info');
 
     // Odeslat serveru informaci o připravenosti
+    console.log('Uživatel klikl na ready, odesílám player_ready...');
     ws.send(JSON.stringify({
         type: 'player_ready',
         gameId: gameId
@@ -854,7 +873,12 @@ function checkAllShipsPlaced() {
     const allPlaced = Object.values(myShips).every(ship => ship.placed);
     document.getElementById('readyBtn').disabled = !allPlaced;
     if (allPlaced && !isReady) {
-        readyUp();
+        // Automaticky odeslat player_ready, ale nenastavovat isReady = true
+        console.log('Všechny lodě umístěny, odesílám player_ready...');
+        ws.send(JSON.stringify({
+            type: 'player_ready',
+            gameId: gameId
+        }));
     }
 }
 
