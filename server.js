@@ -304,41 +304,44 @@ function placeShip(board, row, col, size, horizontal, value) {
 function isShipSunk(board, shots, row, col) {
     const visited = Array(10).fill().map(() => Array(10).fill(false));
     const shipCells = [];
-    
     function dfs(r, c) {
         if (r < 0 || r >= 10 || c < 0 || c >= 10 || visited[r][c] || board[r][c] === 0) {
             return;
         }
         visited[r][c] = true;
         shipCells.push([r, c]);
-        
+        console.log(`[isShipSunk DFS] r=${r}, c=${c}, board=${board[r][c]}, shots=${shots[r][c]}`);
         dfs(r - 1, c);
         dfs(r + 1, c);
         dfs(r, c - 1);
         dfs(r, c + 1);
     }
-    
+    console.log(`[isShipSunk] START row=${row}, col=${col}`);
     dfs(row, col);
+    console.log(`[isShipSunk] shipCells:`, JSON.stringify(shipCells));
     return shipCells.every(([r, c]) => shots[r][c] === 2);
 }
 
 function markSunkShip(board, shots, row, col) {
     const visited = Array(10).fill().map(() => Array(10).fill(false));
-    
     function dfs(r, c) {
         if (r < 0 || r >= 10 || c < 0 || c >= 10 || visited[r][c] || board[r][c] === 0) {
             return;
         }
         visited[r][c] = true;
         shots[r][c] = 3;
-        
+        console.log(`[markSunkShip DFS] r=${r}, c=${c}, board=${board[r][c]}, shots=${shots[r][c]}`);
         dfs(r - 1, c);
         dfs(r + 1, c);
         dfs(r, c - 1);
         dfs(r, c + 1);
     }
-    
+    console.log(`[markSunkShip] START row=${row}, col=${col}`);
     dfs(row, col);
+    // Výpis všech potopených polí
+    const sunk = [];
+    for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) if (shots[r][c] === 3) sunk.push([r, c]);
+    console.log(`[markSunkShip] Sunk cells:`, JSON.stringify(sunk));
 }
 
 // WebSocket connection handling
