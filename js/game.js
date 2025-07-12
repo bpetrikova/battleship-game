@@ -46,6 +46,7 @@ let chatMessages = [];
  * Initialize the multiplayer game
  */
 function initMultiplayerGame() {
+    console.log('initMultiplayerGame called');
     showConnectionScreen();
     connectToServer();
 }
@@ -217,9 +218,11 @@ function startGame(data) {
     playerNumber = data.playerNumber;
     opponentName = data.opponent;
     gameState = 'setup';
-    
+    console.log('startGame:', { gameId, playerNumber, opponentName });
     showGameInterface();
     showMessage(`Hra začíná! Tvůj protivník: ${opponentName}`, 'success');
+    console.log('myShips at start:', myShips);
+    console.log('myBoard at start:', myBoard);
 }
 
 /**
@@ -676,7 +679,8 @@ function randomPlacement() {
     
     shipSizes.forEach((size, index) => {
         let placed = false;
-        while (!placed) {
+        let attempts = 0;
+        while (!placed && attempts < 100) {
             const row = Math.floor(Math.random() * 10);
             const col = Math.floor(Math.random() * 10);
             const horizontal = Math.random() < 0.5;
@@ -697,12 +701,14 @@ function randomPlacement() {
                 
                 placed = true;
             }
+            attempts++;
         }
     });
     
     selectedShip = null;
     updateDisplay();
     checkAllShipsPlaced();
+    console.log('randomPlacement:', { myShips, myBoard });
 }
 
 function clearBoard() {
@@ -810,6 +816,7 @@ function updateDisplay() {
     updateBoard('opponentBoard', opponentBoard, myShots, false);
     updateShipList();
     updateStats();
+    console.log('updateDisplay:', { myShips, myBoard });
 }
 
 function updateBoard(boardId, board, shots, showShips) {
