@@ -511,20 +511,6 @@ function startCombatPhase(data) {
  */
 function handleShotResult(data) {
     const { playerId, row, col, hit, shipSunk, nextPlayer, nextPlayerName } = data;
-    // --- přidáno: aktualizace shots z dat serveru ---
-    if (data.shots) {
-        myShots = data.shots[ws.playerId];
-        // Najdi id soupeře
-        let oppId = null;
-        for (const id in data.shots) {
-            if (id !== ws.playerId) oppId = id;
-        }
-        if (oppId) opponentShots = data.shots[oppId];
-        // DEBUG výpisy
-        console.log('[CLIENT DEBUG] myShots:', JSON.stringify(myShots));
-        console.log('[CLIENT DEBUG] opponentShots:', JSON.stringify(opponentShots));
-    }
-    // --- konec přidaného ---
     let overlayEmoji = '';
     let overlayMsg = '';
     if (playerId === ws.playerId) {
