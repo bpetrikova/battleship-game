@@ -419,10 +419,14 @@ app.get('/status', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+console.log(`Environment PORT: ${process.env.PORT}`);
+console.log(`Using PORT: ${PORT}`);
+
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚢 Battleship multiplayer server running on port ${PORT}`);
     console.log(`📱 Access the game at: http://localhost:${PORT}`);
     console.log(`🔗 WebSocket endpoint: ws://localhost:${PORT}`);
+    console.log(`🌐 Railway URL will be available at your project domain`);
 });
 
 // Cleanup inactive games every 5 minutes
