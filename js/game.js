@@ -368,6 +368,7 @@ function createBoards() {
  * Handle clicks on my board
  */
 function handleMyBoardClick(index) {
+    console.log('Kliknuto na pole:', index, 'selectedShip:', selectedShip, 'editMode:', editMode, 'gameState:', gameState, 'myShips:', JSON.stringify(myShips));
     if (gameState !== 'setup') return;
     const row = Math.floor(index / 10);
     const col = index % 10;
@@ -386,10 +387,11 @@ function handleMyBoardClick(index) {
         return;
     }
     // Debug log
-    console.log('Placing ship:', { gameId, selectedShip, row, col, isHorizontal });
+    console.log('Placing ship:', { gameId, selectedShip, row, col, isHorizontal, size: myShips[selectedShip].size });
     if (canPlaceShip(myBoard, row, col, myShips[selectedShip].size, isHorizontal)) {
         placeShip(myBoard, row, col, myShips[selectedShip].size, isHorizontal, 1);
         myShips[selectedShip].placed = true;
+        console.log('Po umístění lodě, myBoard:', JSON.stringify(myBoard));
         ws.send(JSON.stringify({
             type: 'place_ship',
             gameId: gameId,
@@ -401,6 +403,8 @@ function handleMyBoardClick(index) {
         selectedShip = null;
         updateDisplay();
         checkAllShipsPlaced();
+    } else {
+        console.log('Nelze umístit loď na tuto pozici:', { row, col, size: myShips[selectedShip].size, isHorizontal });
     }
 }
 
@@ -762,6 +766,7 @@ function removeShipAt(row, col) {
 }
 
 function canPlaceShip(board, row, col, size, horizontal) {
+    console.log('canPlaceShip:', { row, col, size, horizontal });
     if (horizontal) {
         if (col + size > 10) return false;
         for (let i = 0; i < size; i++) {
@@ -795,6 +800,7 @@ function canPlaceShip(board, row, col, size, horizontal) {
 }
 
 function placeShip(board, row, col, size, horizontal, value) {
+    console.log('placeShip:', { row, col, size, horizontal, value });
     if (horizontal) {
         for (let i = 0; i < size; i++) {
             board[row][col + i] = value;
@@ -804,6 +810,7 @@ function placeShip(board, row, col, size, horizontal, value) {
             board[row + i][col] = value;
         }
     }
+    console.log('Stav boardu po placeShip:', JSON.stringify(board));
 }
 
 function checkAllShipsPlaced() {
@@ -812,14 +819,15 @@ function checkAllShipsPlaced() {
 }
 
 function updateDisplay() {
+    console.log('updateDisplay: myShips:', JSON.stringify(myShips), 'myBoard:', JSON.stringify(myBoard));
     updateBoard('myBoard', myBoard, opponentShots, true);
     updateBoard('opponentBoard', opponentBoard, myShots, false);
     updateShipList();
     updateStats();
-    console.log('updateDisplay:', { myShips, myBoard });
 }
 
 function updateBoard(boardId, board, shots, showShips) {
+    console.log('updateBoard:', { boardId, showShips, board: JSON.stringify(board) });
     const boardElement = document.getElementById(boardId);
     const cells = boardElement.querySelectorAll('.cell');
     
