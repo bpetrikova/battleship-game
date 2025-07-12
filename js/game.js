@@ -915,12 +915,12 @@ function updateBoard(boardId, board, shots, showShips) {
                 cell.classList.add('editable');
             }
         }
-        // Speciální logika pro moje pole: pokud je tam loď a byla potopena, zobraz sunk
+        // Speciální logika pro moje pole: pokud je tam loď a byla potopena, zobraz sunk a nikdy hit
         if (boardId === 'myBoard' && board[row][col] > 0) {
             if (opponentShots[row][col] === 3) {
                 cell.classList.remove('hit');
                 cell.classList.add('sunk');
-            } else if (opponentShots[row][col] === 2) {
+            } else if (opponentShots[row][col] === 2 && opponentShots[row][col] !== 3) {
                 cell.classList.add('hit');
             }
         }
